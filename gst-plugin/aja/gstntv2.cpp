@@ -10,7 +10,6 @@
 #include <fcntl.h>
 #include <string>
 #include <sched.h>
-#include <unistd.h>
 #include <pthread.h>
 
 #include "gstntv2.h"
@@ -19,6 +18,9 @@
 #include "ntv2devicefeatures.h"
 #include "ajabase/system/process.h"
 #include "ajabase/system/systemtime.h"
+
+#define S_IRUSR 0400
+#define S_IWUSR 0200
 
 GST_DEBUG_CATEGORY_STATIC (gst_ntv2_debug);
 #define GST_CAT_DEFAULT gst_ntv2_debug
