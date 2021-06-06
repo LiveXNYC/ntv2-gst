@@ -1476,7 +1476,7 @@ gst_aja_video_src_video_callback (void *refcon, void *msg)
   GstAjaVideoSrc *src = (GstAjaVideoSrc *) refcon;
   AjaVideoBuff *videoBuffer = (AjaVideoBuff *) msg;
 
-  if (src->input->video_enabled == FALSE)
+  if (src == NULL || src->input == NULL || src->input->video_enabled == FALSE)
     return false;
 
   gst_aja_video_src_got_frame (src, videoBuffer);

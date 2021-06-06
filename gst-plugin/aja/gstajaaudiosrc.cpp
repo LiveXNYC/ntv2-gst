@@ -567,7 +567,9 @@ gst_aja_audio_src_stop (GstAjaAudioSrc * src)
   if (src->input && src->input->audio_enabled) {
     g_mutex_lock (&src->input->lock);
     src->input->audio_enabled = FALSE;
-    src->input->ntv2AV->SetCallback (AUDIO_CALLBACK, 0, 0);
+	if (src->input->ntv2AV) {
+		src->input->ntv2AV->SetCallback(AUDIO_CALLBACK, 0, 0);
+	}
     g_mutex_unlock (&src->input->lock);
   }
 
@@ -605,10 +607,11 @@ gst_aja_audio_src_change_state (GstElement * element, GstStateChange transition)
       // Check if there is a video src for this input too and if it
       // is actually in the same pipeline
       g_mutex_lock (&src->input->lock);
-      if (src->input->videosrc)
-        videosrc = GST_ELEMENT_CAST (gst_object_ref (src->input->videosrc));
-      src->input->ntv2AV->SetCallback (AUDIO_CALLBACK,
-          &gst_aja_audio_src_audio_callback, src);
+	  if (src->input->videosrc){
+		  videosrc = GST_ELEMENT_CAST(gst_object_ref(src->input->videosrc));
+		  src->input->ntv2AV->SetCallback(AUDIO_CALLBACK,
+			  &gst_aja_audio_src_audio_callback, src);
+	  }
       g_mutex_unlock (&src->input->lock);
 
       if (!videosrc) {
@@ -649,6 +652,7 @@ gst_aja_audio_src_change_state (GstElement * element, GstStateChange transition)
       break;
 
     case GST_STATE_CHANGE_READY_TO_NULL:
+	  gst_aja_audio_src_stop(src);
       gst_aja_audio_src_close (src);
       break;
 
@@ -935,7 +939,7 @@ gst_aja_audio_src_audio_callback (void *refcon, void *msg)
   GstAjaAudioSrc *src = (GstAjaAudioSrc *) refcon;
   AjaAudioBuff *audioBuffer = (AjaAudioBuff *) msg;
 
-  if (src->input->audio_enabled == FALSE)
+  if (src == NULL || src->input == NULL || src->input->video_enabled == FALSE)
     return false;
 
   gst_aja_audio_src_got_packet (src, audioBuffer);
