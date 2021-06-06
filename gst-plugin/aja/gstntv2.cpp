@@ -1710,10 +1710,12 @@ NTV2GstAV::ACInputWorker (void)
 
       // Possible callbacks are not setup yet so make sure we release the buffer if
       // no one is there to catch them
-      if (!DoCallback (AUDIO_CALLBACK, pAudioData))
-        ReleaseAudioBuffer (pAudioData);
-
+	  if (!pAudioData->lastFrame) {
+		  if (!DoCallback(AUDIO_CALLBACK, pAudioData))
+			  ReleaseAudioBuffer(pAudioData);
+	  }
       if (pAudioData->lastFrame) {
+		ReleaseAudioBuffer(pAudioData);
         GST_INFO ("Audio out last frame number %" G_GUINT64_FORMAT, processed_frames);
         mLastFrameAudioOut = true;
       }
