@@ -684,7 +684,7 @@ gst_aja_video_src_open (GstAjaVideoSrc * src)
       src->input->mode->bitDepth,
       src->input->mode->is422,
       false,
-      src->sdi_input_mode, timecode_mode, false, src->output_cc ? true : false,
+      src->sdi_input_mode, timecode_mode, false, /*src->output_cc ? true : false,*/
       src->passthrough ? true : false, src->capture_cpu_core);
   if (!AJA_SUCCESS (status)) {
     GST_ERROR_OBJECT (src, "Failed to initialize input");
