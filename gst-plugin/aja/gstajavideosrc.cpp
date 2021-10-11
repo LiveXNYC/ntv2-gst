@@ -101,6 +101,7 @@ static void gst_aja_video_src_get_property (GObject * object, guint property_id,
 static void gst_aja_video_src_finalize (GObject * object);
 
 static gboolean gst_aja_video_src_query (GstBaseSrc * src, GstQuery * query);
+static gboolean gst_aja_video_src_set_caps(GstBaseSrc* bsrc, GstCaps* caps);
 static GstCaps * gst_aja_video_src_get_caps (GstBaseSrc * src, GstCaps * filter);
 static gboolean gst_aja_video_src_unlock (GstBaseSrc * src);
 static gboolean gst_aja_video_src_unlock_stop (GstBaseSrc * src);
@@ -141,6 +142,7 @@ gst_aja_video_src_class_init (GstAjaVideoSrcClass * klass)
 
   basesrc_class->query = GST_DEBUG_FUNCPTR (gst_aja_video_src_query);
   basesrc_class->negotiate = NULL;
+  basesrc_class->set_caps = GST_DEBUG_FUNCPTR(gst_aja_video_src_set_caps);
   basesrc_class->get_caps = GST_DEBUG_FUNCPTR (gst_aja_video_src_get_caps);
   basesrc_class->unlock = GST_DEBUG_FUNCPTR (gst_aja_video_src_unlock);
   basesrc_class->unlock_stop =
@@ -532,6 +534,16 @@ gst_aja_video_src_start (GstAjaVideoSrc *src)
   return TRUE;
 }
 
+static gboolean
+gst_aja_video_src_set_caps(GstBaseSrc* bsrc, GstCaps* caps)
+{
+    GstAjaVideoSrc* src = GST_AJA_VIDEO_SRC(bsrc);
+
+    GST_DEBUG_OBJECT(src, "Set caps %" GST_PTR_FORMAT, caps);
+
+    return TRUE;
+}
+
 static GstCaps *
 gst_aja_video_src_get_caps (GstBaseSrc * bsrc, GstCaps * filter)
 {
@@ -539,12 +551,13 @@ gst_aja_video_src_get_caps (GstBaseSrc * bsrc, GstCaps * filter)
   GstCaps *caps;
 
   caps = gst_aja_mode_get_caps_raw (src->modeEnum, src->use_nvmm);
+  GST_DEBUG_OBJECT(src, "caps %" GST_PTR_FORMAT, caps);
   if (filter) {
     GstCaps *tmp = gst_caps_intersect_full (filter, caps, GST_CAPS_INTERSECT_FIRST);
     gst_caps_unref (caps);
     caps = tmp;
   }
-
+  GST_DEBUG_OBJECT(src, "caps %" GST_PTR_FORMAT, caps);
   return caps;
 }
 
@@ -643,11 +656,13 @@ gst_aja_video_src_open (GstAjaVideoSrc * src)
     return FALSE;
   }
 
+  GST_DEBUG_OBJECT(src, "Raw mode %d", src->modeEnum);
   mode = gst_aja_get_mode_raw (src->modeEnum);
   g_assert (mode != NULL);
 
   caps = gst_aja_mode_get_caps_raw(src->modeEnum, src->use_nvmm);
   g_assert (caps != NULL);
+  GST_DEBUG_OBJECT(src, "caps %" GST_PTR_FORMAT, caps);
 
   g_mutex_lock (&src->input->lock);
   src->input->mode = mode;
@@ -659,7 +674,7 @@ gst_aja_video_src_open (GstAjaVideoSrc * src)
     g_mutex_unlock (&src->input->lock);
     return FALSE;
   }
-
+  GST_DEBUG_OBJECT(src, "OPENED");
   switch (src->input_mode) {
     case GST_AJA_VIDEO_INPUT_MODE_SDI:
       input_source = NTV2_INPUTSOURCE_SDI1;
@@ -704,6 +719,9 @@ gst_aja_video_src_open (GstAjaVideoSrc * src)
       break;
   }
 
+  GST_DEBUG_OBJECT(src, "bitDepth %d", src->input->mode->bitDepth);
+  GST_DEBUG_OBJECT(src, "isRGBA %d", src->input->mode->isRGBA);
+  GST_DEBUG_OBJECT(src, "is422 %d", src->input->mode->is422);
   status = src->input->ntv2AV->Init (src->input->mode->videoFormat,
       input_source,
       src->input->mode->bitDepth,

@@ -10,7 +10,7 @@
 #include <semaphore.h>
 #include <fcntl.h>
 #include <string>
-#include <sched.h>
+//#include <sched.h>
 #include <pthread.h>
 
 #include "gstntv2.h"
