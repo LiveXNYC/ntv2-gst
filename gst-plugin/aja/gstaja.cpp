@@ -59,6 +59,7 @@ gst_aja_acquire_input (const gchar * inDeviceSpecifier, gint channel,
 
   g_return_val_if_fail (channel >= 0 && channel < NTV2_MAX_NUM_CHANNELS, NULL);
 
+  GST_DEBUG("Device Specifier %s, channel %i", inDeviceSpecifier, channel);
   G_LOCK (devices);
   if (!devices)
     devices = g_hash_table_new (g_str_hash, g_str_equal);

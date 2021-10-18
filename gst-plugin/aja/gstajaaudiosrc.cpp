@@ -106,6 +106,7 @@ static void gst_aja_audio_src_finalize (GObject * object);
 
 static gboolean gst_aja_audio_src_unlock (GstBaseSrc * bsrc);
 static gboolean gst_aja_audio_src_unlock_stop (GstBaseSrc * bsrc);
+static gboolean gst_aja_audio_src_set_caps(GstBaseSrc* bsrc, GstCaps* caps);
 static GstCaps * gst_aja_audio_src_get_caps (GstBaseSrc * bsrc, GstCaps * filter);
 static gboolean gst_aja_audio_src_query (GstBaseSrc * bsrc, GstQuery * query);
 
@@ -143,6 +144,7 @@ gst_aja_audio_src_class_init (GstAjaAudioSrcClass * klass)
 
   basesrc_class->query = GST_DEBUG_FUNCPTR (gst_aja_audio_src_query);
   basesrc_class->negotiate = NULL;
+  basesrc_class->set_caps = GST_DEBUG_FUNCPTR(gst_aja_audio_src_set_caps);
   basesrc_class->get_caps = GST_DEBUG_FUNCPTR (gst_aja_audio_src_get_caps);
   basesrc_class->unlock = GST_DEBUG_FUNCPTR (gst_aja_audio_src_unlock);
   basesrc_class->unlock_stop =
@@ -389,6 +391,16 @@ gst_aja_audio_src_start (GstAjaAudioSrc *src)
   return TRUE;
 }
 
+static gboolean
+gst_aja_audio_src_set_caps(GstBaseSrc* bsrc, GstCaps* caps)
+{
+    GstAjaVideoSrc* src = GST_AJA_VIDEO_SRC(bsrc);
+
+    GST_DEBUG_OBJECT(src, "Set caps %" GST_PTR_FORMAT, caps);
+
+    return TRUE;
+}
+
 static GstCaps *
 gst_aja_audio_src_get_caps (GstBaseSrc * bsrc, GstCaps * filter)
 {
@@ -400,13 +412,13 @@ gst_aja_audio_src_get_caps (GstBaseSrc * bsrc, GstCaps * filter)
       GST_AUDIO_FORMAT_S32LE, 48000, src->channels, NULL);
 
   caps = gst_audio_info_to_caps (&info);
-
+  GST_DEBUG_OBJECT(src, "caps %" GST_PTR_FORMAT, caps);
   if (filter) {
     GstCaps *tmp = gst_caps_intersect_full (filter, caps, GST_CAPS_INTERSECT_FIRST);
     gst_caps_unref (caps);
     caps = tmp;
   }
-
+  GST_DEBUG_OBJECT(src, "caps %" GST_PTR_FORMAT, caps);
   return caps;
 }
 
