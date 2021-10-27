@@ -139,6 +139,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>c:\aja\ajalibraries;c:\aja\ajalibraries/ajabase;c:\aja\ajalibraries/ajantv2/codecs/hevc/m31;c:\aja\ajalibraries/ajantv2/src/win;c:\aja\ajalibraries/ajantv2/src;c:\aja\ajalibraries/ajantv2/includes;C:\gstreamer\1.0\msvc_x86_64\lib\glib-2.0\include;C:\gstreamer\1.0\msvc_x86_64\include\glib-2.0;C:\gstreamer\1.0\msvc_x86_64\include\gstreamer-1.0;C:\pthread3-win64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
